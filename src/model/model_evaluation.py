@@ -167,10 +167,13 @@ def main():
             # Log model with signature
             mlflow.sklearn.log_model(
                 model,
-                "lgbm_model",
+                name = "lgbm_model",
                 # signature=signature,  # <--- Added for signature
                 # input_example=input_example  # <--- Added input example
             )
+
+            # artifact_uri = mlflow.get_artifact_uri()
+            # model_path = f"{artifact_uri}/lgbm_model"
 
             # Save model info
             model_path = "lgbm_model"
