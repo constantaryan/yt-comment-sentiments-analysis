@@ -1,4 +1,4 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = C:\Users\aryan\OneDrive\Desktop\temp
+    url = s3://constant-yt-dvc-bucket
