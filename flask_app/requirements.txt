@@ -1,0 +1,14 @@
+dvc==3.64.0
+dvc-s3==3.2.2
+Flask==3.1.2
+flask_cors==6.0.1
+joblib==1.4.2
+matplotlib==3.10.7
+mlflow==3.6.0
+# mlflow_skinny==3.6.0
+# mlflow_tracing==3.6.0
+lightgbm==4.6.0
+nltk==3.9.2
+numpy==2.3.5
+pandas==2.3.3
+wordcloud==1.9.4
