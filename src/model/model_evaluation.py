@@ -147,9 +147,11 @@ def main():
             vectorizer = load_vectorizer(os.path.join(root_dir, 'tfidf_vectorizer.pkl'))
 
             # Log model paramters
-            if hasattr(model, 'get_params'):
-                for param_name, param_value in model.get_params().items():
-                    mlflow.log_param(param_name,param_value)
+            # if hasattr(model, 'get_params'):
+            #     for param_name, param_value in model.get_params().items():
+            #         mlflow.log_param(param_name,param_value)
+
+
 
             # Load test data for signature inference
             test_data = load_data(os.path.join(root_dir, 'data/interim/test_processed.csv'))
@@ -159,21 +161,18 @@ def main():
             y_test = test_data['category'].values
 
             # Create a DataFrame for signature inference (using first few rows as an example)
-            # input_example = pd.DataFrame(X_test_tfidf.toarray()[:5], columns=vectorizer.get_feature_names_out())  # <--- Added for signature
+            input_example = pd.DataFrame(X_test_tfidf.toarray()[:5], columns=vectorizer.get_feature_names_out())  # signature
 
             # Infer the signature
-            # signature = infer_signature(input_example, model.predict(X_test_tfidf[:5]))  # <--- Added for signature
+            signature = infer_signature(input_example, model.predict(X_test_tfidf[:5]))  # signature
 
             # Log model with signature
             mlflow.sklearn.log_model(
                 model,
                 name = "lgbm_model",
-                # signature=signature,  # <--- Added for signature
-                # input_example=input_example  # <--- Added input example
+                signature=signature,  # <--- Added for signature
+                input_example=input_example  # <--- Added input example
             )
-
-            # artifact_uri = mlflow.get_artifact_uri()
-            # model_path = f"{artifact_uri}/lgbm_model"
 
             # Save model info
             model_path = "lgbm_model"

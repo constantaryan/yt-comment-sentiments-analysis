@@ -5,6 +5,7 @@ import mlflow
 import logging
 import os
 
+
 # Set up MLflow tracking URI
 mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
 
