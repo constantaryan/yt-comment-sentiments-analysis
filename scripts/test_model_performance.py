@@ -4,7 +4,7 @@ import pickle
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import mlflow
 
-# Set your remote tracking URI
+# Set up remote tracking URI
 mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
 
 @pytest.mark.parametrize("model_name, stage, holdout_data_path, vectorizer_path", [
