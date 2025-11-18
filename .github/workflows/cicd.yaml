@@ -100,5 +100,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-south-1
         run: |
-          pytest scripts/promote_model.py
+          python scripts/promote_model.py
 
