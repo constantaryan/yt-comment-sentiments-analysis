@@ -1,8 +1,10 @@
 import pytest
 import requests
 import json
+import os
 
-BASE_URL = "http://localhost:5000"  # Replace with your deployed URL if needed
+# BASE_URL = "http://localhost:5000"  # Replace with your deployed URL if needed
+BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:5000")
 
 def test_predict_endpoint():
     data = {
