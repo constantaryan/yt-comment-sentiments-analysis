@@ -2,10 +2,10 @@ version: 0.0
 os: linux
 files:
   - source: /
-    desitnation: /home/ubuntu/app
+    destination: /home/ubuntu/app
 hooks:
   BeforeInstall:
-    - location: deploy/scripts/install_dependencies.sh 
+    - location: deploy/scripts/install_dependencies.sh
       timeout: 300
       runas: ubuntu
   ApplicationStart:
