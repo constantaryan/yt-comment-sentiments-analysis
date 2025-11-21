@@ -8,7 +8,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.pkl
 
 # virtual envs
 venv/
