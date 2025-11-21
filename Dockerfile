@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y libgomp1
 COPY flask_app/ /app/
 COPY tfidf_vectorizer.pkl /app/tfidf_vectorizer.pkl
 # RUN pip install -r requirements.txt
-RUN pip install --no-cache-dir -r /flask_app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 RUN python -m nltk.downloader stopwords wordnet
 
 EXPOSE 5000
