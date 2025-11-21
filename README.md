@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-# Yt-comment-sentiments-analysis
+
 ML Project to Analyze Youtube Comments.
 =======
-yt-comment-sentiment-analysis
-==============================
 
 A Chrome plugin to detect youtube comment sentiments
 
@@ -57,6 +54,3 @@ Project Organization
 
 
 --------
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
->>>>>>> ce754ca (Initial commit)
