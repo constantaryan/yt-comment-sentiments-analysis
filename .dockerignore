@@ -1,0 +1,37 @@
+# node / build directories
+node_modules/
+dist/
+build/
+
+# Python ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+
+# virtual envs
+venv/
+env/
+.env
+.env.*
+
+# git
+.git
+.gitignore
+
+# local data, tests, logs
+tests/
+test/
+*.csv
+*.tsv
+*.log
+mlruns/
+artifacts/
+model_dir/
+
+# IDEs / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

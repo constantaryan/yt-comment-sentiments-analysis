@@ -56,10 +56,12 @@ def load_model_and_vectorizer(model_name, model_version, vectorizer_path):
     model_uri = f"models:/{model_name}/{model_version}"
     model = mlflow.pyfunc.load_model(model_uri)
     vectorizer = joblib.load(vectorizer_path)  # Load the vectorizer
+    print("Model loaded:", model is not None)
+    print("Vectorizer loaded:", vectorizer is not None)
     return model, vectorizer
 
 # Initialize the model and vectorizer
-model, vectorizer = load_model_and_vectorizer("yt_chrome_plugin_model","1", "./tfidf_vectorizer.pkl")  # Update paths and versions as needed
+model, vectorizer = load_model_and_vectorizer("yt_chrome_plugin_model","13", "./tfidf_vectorizer.pkl")  # Update paths and versions as needed
 
 @app.route('/')
 def home():
