@@ -49,7 +49,7 @@ The backend is not a quick prototype. It is a **full MLOps system**:
 - Automated **CI/CD** so every code push triggers testing, model validation, image build, and deployment
 
 ---
-## 🏗️ System Architecture
+## 💌 System Architecture
 
                     ┌─────────────────────────────────┐
                     │       YouTube (Browser)          │
@@ -94,7 +94,7 @@ The backend is not a quick prototype. It is a **full MLOps system**:
 
 
 ---
-## 🛠️ Tech Stack
+## 💬 Tech Stack
 
 | Layer | Technology |
 |---|---|
