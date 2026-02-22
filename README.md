@@ -27,17 +27,10 @@
 ## 📌 Table of Contents
 
 - [Project Overview](#-project-overview)
-- [Architecture](#-system-architecture)
+- [System Architecture](#-system-architecture)
 - [Tech Stack](#-tech-stack)
 - [ML Pipeline & Experimentation](#-ml-pipeline--experimentation)
-- [MLOps: DVC + MLflow](#-mlops-dvc--mlflow)
-- [Chrome Extension](#-chrome-extension)
-- [Flask API](#-flask-rest-api)
-- [Dockerization & AWS Deployment](#-dockerization--aws-deployment)
-- [CI/CD Workflow](#-cicd-workflow)
-- [Project Structure](#-project-structure)
 - [Local Setup](#-local-setup)
-- [Future Enhancements](#-future-enhancements)
 
 ---
 
@@ -56,7 +49,6 @@ The backend is not a quick prototype. It is a **full MLOps system**:
 - Automated **CI/CD** so every code push triggers testing, model validation, image build, and deployment
 
 ---
-
 ## 🏗️ System Architecture
 
                     ┌─────────────────────────────────┐
@@ -102,7 +94,6 @@ The backend is not a quick prototype. It is a **full MLOps system**:
 
 
 ---
-
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
