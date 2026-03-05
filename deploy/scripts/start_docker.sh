@@ -19,6 +19,6 @@ if [ "$(docker ps -aq -f name=Aryan-app)" ]; then
 fi
 
 echo "Starting new container..."
-docker run -d -p 80:5000 --name Aryan-app 90716168581.dkr.ecr.ap-south-1.amazonaws.com/yt_comments_sentiments_analysis:latest
+docker run -d -p 80:5000 --name Aryan-app 590716168581.dkr.ecr.ap-south-1.amazonaws.com/yt_comments_sentiments_analysis:latest
 
 echo "Container started successfully."
