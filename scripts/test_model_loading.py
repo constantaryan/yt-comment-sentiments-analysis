@@ -1,11 +1,14 @@
 import mlflow.pyfunc
 import pytest 
 from mlflow.tracking import MlflowClient
+import dagshub
 
-mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
+dagshub.init(repo_owner='constantaryan', repo_name='yt-comment-sentiments-analysis', mlflow=True)
+mlflow.set_tracking_uri("https://dagshub.com/constantaryan/yt-comment-sentiments-analysis.mlflow")
+# mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
 
 @pytest.mark.parametrize("model_name, stage",[
-    ("yt_chrome_plugin_model","staging"),])
+    ("yt_chrome_plugin_model","Staging"),])
 
 def test_load_latest_staging_model(model_name, stage):
     client = MlflowClient()

@@ -3,7 +3,7 @@ name: CICD Pipeline
 on: push
 
 jobs:
-  model-deployment:
+  CI-CD:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,6 +14,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.11'
+
+      - name: Install AWS CLI v2
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2 
 
       - name: Cache pip dependencies
         uses: actions/cache@v3
@@ -32,6 +37,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-south-1  
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           dvc repro
 
@@ -39,7 +45,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-south-1  
+          AWS_DEFAULT_REGION: ap-south-1 
         run: |
           dvc push
 
@@ -74,6 +80,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-south-1
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           pytest scripts/test_model_loading.py
 
@@ -82,6 +89,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-south-1
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           pytest scripts/test_model_signature.py
 
@@ -90,6 +98,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-south-1
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           pytest scripts/test_model_performance.py
 
@@ -99,6 +108,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-south-1
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           python scripts/promote_model.py
 
@@ -107,6 +117,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-south-1
+          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           nohup python flask_app/app.py &
           sleep 15
@@ -115,50 +126,39 @@ jobs:
         run: |
           pytest scripts/test_flask_api.py
 
-      - name: Login to AWS ECR
-        if: success()
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 254957258419.dkr.ecr.ap-south-1.amazonaws.com
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-      - name: Build Docker image
-        if: success()
-        run: |
-          docker build -t yt-chrome-plugin .
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Tag Docker image
-        if: success()
-        run: |
-          docker tag yt-chrome-plugin:latest 254957258419.dkr.ecr.ap-south-1.amazonaws.com/yt-chrome-plugin:latest
+      # - name: Build Docker image
+      #   if: success()
+      #   run: |
+      #     docker build -t yt-chrome-plugin .
 
-      - name: Push Docker image to AWS ECR
-        if: success()
-        run: |
-          docker push 254957258419.dkr.ecr.ap-south-1.amazonaws.com/yt-chrome-plugin:latest
+      # - name: Tag Docker image
+      #   if: success()
+      #   run: |
+      #     docker tag yt-chrome-plugin:latest 254957258419.dkr.ecr.ap-south-1.amazonaws.com/yt-chrome-plugin:latest
 
-       #Zip the required files
-      - name: Zip files for deployment
-        if: success()
+      # - name: Push Docker image to AWS ECR
+      #   if: success()
+      #   run: |
+      #     docker push 254957258419.dkr.ecr.ap-south-1.amazonaws.com/yt-chrome-plugin:latest
+      
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ secrets.ECR_REPOSITORY_URI }}
+          IMAGE_TAG: latest
         run: |
-          zip -r deployment.zip appspec.yml deploy/scripts/install_dependencies.sh deploy/scripts/start_docker.sh
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-      # Upload the ZIP file to S3
-      - name: Upload ZIP to S3
-        if: success()
-        run: |
-          aws s3 cp deployment.zip s3://aryanbucketfordocker/deployment.zip
-
-      # Deploy to AWS CodeDeploy using the uploaded ZIP file
-      - name: Deploy to AWS CodeDeploy
-        if: success()
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws deploy create-deployment \
-            --application-name Yt-plugin-docker \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --deployment-group-name YtPluginDeploymentGroup \
-            --s3-location bucket=aryanbucketfordocker,key=deployment.zip,bundleType=zip \
-            --file-exists-behavior OVERWRITE \
-            --region ap-south-1
+      

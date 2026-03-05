@@ -16,6 +16,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from mlflow.tracking import MlflowClient
 import matplotlib.dates as mdates
+import dagshub
 
 app = Flask(__name__)
 CORS(app)
@@ -51,17 +52,23 @@ def preprocess_comment(comment):
 
 def load_model_and_vectorizer(model_name, model_version, vectorizer_path):
     # Set MLflow tracking URI to your server
-    mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")  # Replace with your MLflow tracking URI
+    dagshub.init(repo_owner='constantaryan', repo_name='yt-comment-sentiments-analysis', mlflow=True)
+    mlflow.set_tracking_uri("https://dagshub.com/constantaryan/yt-comment-sentiments-analysis.mlflow")
+    # mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")  # Replace with your MLflow tracking URI
     client = MlflowClient()
-    model_uri = f"models:/{model_name}/{model_version}"
-    model = mlflow.pyfunc.load_model(model_uri)
+    # model_uri = f"models:/{model_name}/{model_version}"
+    stage = "Production"
+    # stage = "Staging"
+    model_uri = f"models:/{model_name}/{stage}"
+    model = mlflow.sklearn.load_model(model_uri)
+    # model = mlflow.pyfunc.load_model(model_uri)
     vectorizer = joblib.load(vectorizer_path)  # Load the vectorizer
     print("Model loaded:", model is not None)
     print("Vectorizer loaded:", vectorizer is not None)
     return model, vectorizer
 
 # Initialize the model and vectorizer
-model, vectorizer = load_model_and_vectorizer("yt_chrome_plugin_model","1", "./tfidf_vectorizer.pkl")  # Update paths and versions as needed
+model, vectorizer = load_model_and_vectorizer("yt_chrome_plugin_model","1", "./tfidf_vectorizer.pkl")  
 
 @app.route('/')
 def home():

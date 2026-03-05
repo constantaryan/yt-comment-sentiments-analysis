@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import json
 from mlflow.models import infer_signature
+import dagshub
 
 # logging configuration
 logger = logging.getLogger('model_evaluation')
@@ -109,13 +110,14 @@ def log_confusion_matrix(cm, dataset_name):
     mlflow.log_artifact(cm_file_path)
     plt.close()
 
-def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
+def save_model_info(run_id: str, model_uri: str, model_path: str, file_path: str) -> None:
     """Save the model run ID and path to a JSON file."""
     try:
         # Create a dictionary with the info you want to save
         model_info = {
             'run_id': run_id,
-            'model_path': model_path
+            "artifact_path": model_uri,
+            'model_name': model_path
         }
         # Save the dictionary as a JSON file
         with open(file_path, 'w') as file:
@@ -127,7 +129,9 @@ def save_model_info(run_id: str, model_path: str, file_path: str) -> None:
 
 
 def main():
-    mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
+    dagshub.init(repo_owner='constantaryan', repo_name='yt-comment-sentiments-analysis', mlflow=True)
+    mlflow.set_tracking_uri("https://dagshub.com/constantaryan/yt-comment-sentiments-analysis.mlflow")
+    # mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
 
     mlflow.set_experiment('dvc-pipeline')
     
@@ -167,16 +171,22 @@ def main():
             signature = infer_signature(input_example, model.predict(X_test_tfidf[:5]))  # signature
 
             # Log model with signature
-            mlflow.sklearn.log_model(
+            model_info = mlflow.sklearn.log_model(
                 model,
                 name = "lgbm_model",
                 signature=signature,  # <--- Added for signature
                 input_example=input_example  # <--- Added input example
             )
 
+            model_uri = model_info.model_uri
+
             # Save model info
-            model_path = "lgbm_model"
-            save_model_info(run.info.run_id, model_path, 'experiment_info.json')
+            model_path = "yt_chrome_plugin_model"
+            # save_model_info(save_json_path=save_json_path,
+            #         run_id=run_id,
+            #         artifact_path=model_uri,
+            #         model_name=model_name)
+            save_model_info(run.info.run_id,model_uri,model_path, 'experiment_info.json')
 
             # Log the vectorizer as an artifact
             mlflow.log_artifact(os.path.join(root_dir, 'tfidf_vectorizer.pkl'))

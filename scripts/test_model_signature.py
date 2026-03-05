@@ -3,9 +3,11 @@ import pytest
 import pandas as pd
 import pickle
 from mlflow.tracking import MlflowClient
+import dagshub
 
 # Set your remote tracking URI
-mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
+dagshub.init(repo_owner='constantaryan', repo_name='yt-comment-sentiments-analysis', mlflow=True)
+mlflow.set_tracking_uri("https://dagshub.com/constantaryan/yt-comment-sentiments-analysis.mlflow")
 
 @pytest.mark.parametrize("model_name, stage, vectorizer_path", [
     ("yt_chrome_plugin_model", "staging", "tfidf_vectorizer.pkl"),  # Replace with your actual model name and vectorizer path

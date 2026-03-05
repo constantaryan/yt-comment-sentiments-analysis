@@ -3,12 +3,13 @@ import pandas as pd
 import pickle
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import mlflow
-
+import dagshub
 # Set up remote tracking URI
-mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")
+dagshub.init(repo_owner='constantaryan', repo_name='yt-comment-sentiments-analysis', mlflow=True)
+mlflow.set_tracking_uri("https://dagshub.com/constantaryan/yt-comment-sentiments-analysis.mlflow")
 
 @pytest.mark.parametrize("model_name, stage, holdout_data_path, vectorizer_path", [
-    ("yt_chrome_plugin_model", "staging", "data/interim/test_processed.csv", "tfidf_vectorizer.pkl"),  
+    ("yt_chrome_plugin_model", "Staging", "data/interim/test_processed.csv", "tfidf_vectorizer.pkl"),  
 ])
 def test_model_performance(model_name, stage, holdout_data_path, vectorizer_path):
     try:
