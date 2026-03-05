@@ -27,8 +27,7 @@ docker run -d \
 -p 80:5000 \
 --name Aryan-app \
 --restart unless-stopped \
--e MLFLOW_TRACKING_USERNAME="$DAGSHUB_USERNAME" \
--e MLFLOW_TRACKING_PASSWORD="$DAGSHUB_TOKEN" \
+-e DAGSHUB_USER_TOKEN="$DAGSHUB_TOKEN" \
 590716168581.dkr.ecr.ap-south-1.amazonaws.com/yt_comments_sentiments_analysis:latest
 
 echo "Container started successfully."
