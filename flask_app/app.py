@@ -54,13 +54,13 @@ def load_model_and_vectorizer(model_name, model_version, vectorizer_path):
     # Set MLflow tracking URI to your server
     dagshub.init(repo_owner='constantaryan', repo_name='yt-comment-sentiments-analysis', mlflow=True)
     mlflow.set_tracking_uri("https://dagshub.com/constantaryan/yt-comment-sentiments-analysis.mlflow")
-    # mlflow.set_tracking_uri("http://ec2-43-204-145-141.ap-south-1.compute.amazonaws.com:5000")  # Replace with your MLflow tracking URI
     client = MlflowClient()
     # model_uri = f"models:/{model_name}/{model_version}"
     stage = "Production"
     # stage = "Staging"
     model_uri = f"models:/{model_name}/{stage}"
     model = mlflow.sklearn.load_model(model_uri)
+    
     # model = mlflow.pyfunc.load_model(model_uri)
     vectorizer = joblib.load(vectorizer_path)  # Load the vectorizer
     print("Model loaded:", model is not None)
