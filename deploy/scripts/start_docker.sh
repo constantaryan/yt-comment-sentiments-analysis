@@ -1,7 +1,7 @@
-# log everything to start_docker.log
+#!/bin/bash
 exec > /home/ubuntu/start_docker.log 2>&1
 
-cho "Logging in to ECR..."
+echo "Logging in to ECR..."
 aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 590716168581.dkr.ecr.ap-south-1.amazonaws.com
 
 echo "Pulling Docker image..."
@@ -19,6 +19,7 @@ if [ "$(docker ps -aq -f name=Aryan-app)" ]; then
 fi
 
 echo "Starting new container..."
-docker run -d -p 80:5000 --name Aryan-app 590716168581.dkr.ecr.ap-south-1.amazonaws.com/yt_comments_sentiments_analysis:latest
+# docker run -d -p 80:5000 --name Aryan-app 590716168581.dkr.ecr.ap-south-1.amazonaws.com/yt_comments_sentiments_analysis:latest --restart unless-stopped
+docker run -d -p 80:5000 --name Aryan-app --restart unless-stopped 590716168581.dkr.ecr.ap-south-1.amazonaws.com/yt_comments_sentiments_analysis:latest
 
 echo "Container started successfully."
